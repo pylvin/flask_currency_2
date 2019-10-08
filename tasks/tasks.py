@@ -1,3 +1,4 @@
+from threading import Thread
 import requests
 import json
 import os
@@ -27,32 +28,30 @@ def get_changes(start_valutes,start_date,end_valutes,end_date):
             end_valutes[i]['changes'] = round(check, 10)
             end_valutes[i]['from'] = start_date
             end_valutes[i]['to'] = end_date
-            saver(end_valutes[i]['Name'],end_valutes[i]['@Code'],end_valutes[i]['Value'],end_valutes[i]['from'],end_valutes[i]['to'],end_valutes[i]['changes'],end_valutes[i]['status'],)
+
 
         elif check == 0:
             end_valutes[i]['status'] = 'No Changes'
             end_valutes[i]['changes'] = 0
             end_valutes[i]['from'] = start_date
             end_valutes[i]['to'] = end_date
-            saver(end_valutes[i]['Name'],end_valutes[i]['@Code'],end_valutes[i]['Value'],end_valutes[i]['from'],end_valutes[i]['to'],end_valutes[i]['changes'],end_valutes[i]['status'],)
 
         else:
             end_valutes[i]['status'] = 'down'
             end_valutes[i]['changes'] = round(check, 10)
             end_valutes[i]['from'] = start_date
             end_valutes[i]['to'] = end_date
-            saver(end_valutes[i]['Name'],end_valutes[i]['@Code'],end_valutes[i]['Value'],end_valutes[i]['from'],end_valutes[i]['to'],end_valutes[i]['changes'],end_valutes[i]['status'],)
 
 
     return end_valutes
 
-def saver(name,code,value,from_date,to_date,changes,status):
-    a = Currency(name=name,
-                 code=code,
-                 value=value,
-                 from_date=from_date,
-                 to_date=to_date,
-                 changes=changes,
-                 status=status,
-                 )
-    a.save()
+
+
+def data_checker(all_data,start_date,end_date):
+    if Currency.filter(from_date=start_date, to_date=end_date).first():
+        print('var')
+    else:
+        for i in all_data:
+            a = Currency(name=i['Name'],code=i['@Code'],from_date=i['from'],to_date=i['to'],
+                         status=i['status'],changes=i['changes'],value=i['Value'])
+            a.save()

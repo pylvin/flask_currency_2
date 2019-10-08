@@ -11,7 +11,8 @@ def index():
         end_date = range_date[13:].replace('/','.')
 
         data= get_data(start_date,end_date)
-
+        a=Thread(target=data_checker(get_changes(data[0],start_date,data[1],end_date),start_date,end_date))
+        a.start()
         if data:
             return jsonify(get_changes(data[0],start_date,data[1],end_date))
         else:
